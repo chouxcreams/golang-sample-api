@@ -18,21 +18,30 @@ func NewTaskRepository(client *db.PrismaClient) repository.TaskRepository {
 // Create taskの保存
 func (tr *TaskPrismaRepository) Create(task *model.Task) error {
 	_, err := tr.Client.Task.CreateOne(
-		db.Task.Text.Set(task.Text),
+		db.Task.Text.SetIfPresent(task.Text),
 	).Exec(context.Background())
 	return err
 }
 
 // FindById taskをIDで取得
 func (tr *TaskPrismaRepository) FindById(id int) (*model.Task, error) {
-	task := &model.Task{Id: id}
-	_, err := tr.Client.Task.FindUnique(
+	task, err := tr.Client.Task.FindUnique(
 		db.Task.ID.Equals(id),
 	).Exec(context.Background())
 	if err != nil {
 		return nil, err
 	}
-	return task, nil
+	text, ok := task.Text()
+	if !ok {
+		return &model.Task{
+			Id:   task.ID,
+			Text: nil,
+		}, nil
+	}
+	return &model.Task{
+		Id:   task.ID,
+		Text: &text,
+	}, nil
 }
 
 // Update taskの更新
@@ -40,7 +49,7 @@ func (tr *TaskPrismaRepository) Update(task *model.Task) (*model.Task, error) {
 	_, err := tr.Client.Task.FindUnique(
 		db.Task.ID.Equals(task.Id),
 	).Update(
-		db.Task.Text.Set(task.Text),
+		db.Task.Text.SetIfPresent(task.Text),
 	).Exec(context.Background())
 	if err != nil {
 		return nil, err

@@ -2,15 +2,15 @@ package model
 
 type Task struct {
 	Id   int
-	Text string
+	Text *string
 }
 
-func NewTask(text string) (*Task, error) {
+func NewTask(text *string) (*Task, error) {
 	return &Task{
 		Text: text,
 	}, nil
 }
 
-func (t *Task) Set(text string) {
+func (t *Task) Set(text *string) {
 	t.Text = text
 }
