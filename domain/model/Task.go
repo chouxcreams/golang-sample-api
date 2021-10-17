@@ -11,7 +11,6 @@ func NewTask(text string) (*Task, error) {
 	}, nil
 }
 
-func (t *Task) Set(text string) error {
+func (t *Task) Set(text string) {
 	t.Text = text
-	return nil
 }

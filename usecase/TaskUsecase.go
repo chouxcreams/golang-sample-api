@@ -49,10 +49,7 @@ func (tu *taskUsecase) Update(id int, text string) (*model.Task, error) {
 		return nil, err
 	}
 
-	err = targetTask.Set(text)
-	if err != nil {
-		return nil, err
-	}
+	targetTask.Set(text)
 
 	updatedTask, err := tu.taskRepo.Update(targetTask)
 	if err != nil {
