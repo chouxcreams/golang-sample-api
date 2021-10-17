@@ -13,6 +13,7 @@ type TaskController interface {
 	PostTasks(c echo.Context) error
 	PutTask(c echo.Context) error
 	DeleteTask(c echo.Context) error
+	CompleteTask(c echo.Context) error
 }
 
 type taskController struct {
@@ -64,10 +65,19 @@ func (tc *taskController) GetTask(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	if task.Text == nil {
-		c.Logger().Info("text is nil")
+	return c.JSON(http.StatusOK, apiModel.NewTaskResponse(task))
+}
+
+func (tc *taskController) CompleteTask(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
 	}
-	return c.JSON(http.StatusOK, apiModel.TaskResponse{Text: task.Text, Id: task.Id})
+	err = tc.taskUsecase.Complete(id)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	return c.NoContent(http.StatusNoContent)
 }
 
 func (tc *taskController) DeleteTask(c echo.Context) error {

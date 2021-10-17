@@ -32,15 +32,16 @@ func (tr *TaskPrismaRepository) FindById(id int) (*model.Task, error) {
 		return nil, err
 	}
 	text, ok := task.Text()
+	var modelText *string
 	if !ok {
-		return &model.Task{
-			Id:   task.ID,
-			Text: nil,
-		}, nil
+		modelText = nil
+	} else {
+		modelText = &text
 	}
 	return &model.Task{
-		Id:   task.ID,
-		Text: &text,
+		Id:        task.ID,
+		Text:      modelText,
+		Completed: task.Completed,
 	}, nil
 }
 
@@ -50,6 +51,7 @@ func (tr *TaskPrismaRepository) Update(task *model.Task) (*model.Task, error) {
 		db.Task.ID.Equals(task.Id),
 	).Update(
 		db.Task.Text.SetIfPresent(task.Text),
+		db.Task.Completed.Set(task.Completed),
 	).Exec(context.Background())
 	if err != nil {
 		return nil, err

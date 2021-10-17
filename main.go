@@ -29,6 +29,7 @@ func main() {
 	e.POST("/tasks", taskController.PostTasks)
 	e.GET("/tasks/:id", taskController.GetTask)
 	e.PUT("/tasks/:id", taskController.PutTask)
+	e.PUT("/tasks/:id/complete", taskController.CompleteTask)
 	e.DELETE("/tasks/:id", taskController.DeleteTask)
 	e.Logger.Fatal(e.Start(":8989"))
 }

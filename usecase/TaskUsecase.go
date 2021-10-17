@@ -10,6 +10,7 @@ type TaskUsecase interface {
 	Create(text *string) error
 	FindByID(id int) (*model.Task, error)
 	Update(id int, text *string) (*model.Task, error)
+	Complete(id int) error
 	Delete(id int) error
 }
 
@@ -57,6 +58,19 @@ func (tu *taskUsecase) Update(id int, text *string) (*model.Task, error) {
 	}
 
 	return updatedTask, nil
+}
+
+// Complete taskを更新するときのユースケース
+func (tu *taskUsecase) Complete(id int) error {
+	targetTask, err := tu.taskRepo.FindById(id)
+	if err != nil {
+		return err
+	}
+
+	targetTask.Complete()
+
+	_, err = tu.taskRepo.Update(targetTask)
+	return err
 }
 
 // Delete taskを削除するときのユースケース
