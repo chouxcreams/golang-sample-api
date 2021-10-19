@@ -31,18 +31,7 @@ func (tr *TaskPrismaRepository) FindById(id int) (*model.Task, error) {
 	if err != nil {
 		return nil, err
 	}
-	text, ok := task.Text()
-	var modelText *string
-	if !ok {
-		modelText = nil
-	} else {
-		modelText = &text
-	}
-	return &model.Task{
-		Id:        task.ID,
-		Text:      modelText,
-		Completed: task.Completed,
-	}, nil
+	return toDomainModel(task), nil
 }
 
 // Update taskの更新
@@ -65,4 +54,32 @@ func (tr *TaskPrismaRepository) Delete(task *model.Task) error {
 		db.Task.ID.Equals(task.Id),
 	).Delete().Exec(context.Background())
 	return err
+}
+
+// FindAll taskの一覧の取得
+func (tr *TaskPrismaRepository) FindAll() ([]model.Task, error) {
+	tasks, err := tr.Client.Task.FindMany().Exec(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	var modelTasks []model.Task
+	for _, task := range tasks {
+		modelTasks = append(modelTasks, *toDomainModel(&task))
+	}
+	return modelTasks, nil
+}
+
+func toDomainModel(task *db.TaskModel) *model.Task {
+	text, ok := task.Text()
+	var modelText *string
+	if !ok {
+		modelText = nil
+	} else {
+		modelText = &text
+	}
+	return &model.Task{
+		Id:        task.ID,
+		Text:      modelText,
+		Completed: task.Completed,
+	}
 }

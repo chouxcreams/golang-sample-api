@@ -7,4 +7,5 @@ type TaskRepository interface {
 	FindById(id int) (*model.Task, error)
 	Update(task *model.Task) (*model.Task, error)
 	Delete(task *model.Task) error
+	FindAll() ([]model.Task, error)
 }

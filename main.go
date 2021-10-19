@@ -26,6 +26,7 @@ func main() {
 	taskController := controller.NewTaskController(taskUsecase)
 	e := echo.New()
 	e.GET("/", hello)
+	e.GET("/tasks", taskController.GetTaskList)
 	e.POST("/tasks", taskController.PostTasks)
 	e.GET("/tasks/:id", taskController.GetTask)
 	e.PUT("/tasks/:id", taskController.PutTask)

@@ -12,6 +12,7 @@ type TaskUsecase interface {
 	Update(id int, text *string) (*model.Task, error)
 	Complete(id int) error
 	Delete(id int) error
+	FindAll() ([]model.Task, error)
 }
 
 type taskUsecase struct {
@@ -81,4 +82,14 @@ func (tu *taskUsecase) Delete(id int) error {
 	}
 
 	return tu.taskRepo.Delete(task)
+}
+
+// FindAll taskの一覧を取得するときのユースケース
+func (tu *taskUsecase) FindAll() ([]model.Task, error) {
+	tasks, err := tu.taskRepo.FindAll()
+	if err != nil {
+		return nil, err
+	}
+
+	return tasks, nil
 }

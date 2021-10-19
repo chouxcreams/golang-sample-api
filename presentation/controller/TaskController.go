@@ -14,6 +14,7 @@ type TaskController interface {
 	PutTask(c echo.Context) error
 	DeleteTask(c echo.Context) error
 	CompleteTask(c echo.Context) error
+	GetTaskList(c echo.Context) error
 }
 
 type taskController struct {
@@ -90,4 +91,16 @@ func (tc *taskController) DeleteTask(c echo.Context) error {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 	return c.NoContent(http.StatusNoContent)
+}
+
+func (tc *taskController) GetTaskList(c echo.Context) error {
+	tasks, err := tc.taskUsecase.FindAll()
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	var taskResponses []apiModel.TaskResponse
+	for _, task := range tasks {
+		taskResponses = append(taskResponses, apiModel.NewTaskResponse(&task))
+	}
+	return c.JSON(http.StatusOK, taskResponses)
 }
